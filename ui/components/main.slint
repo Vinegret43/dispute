@@ -1,0 +1,19 @@
+import { View, SettingsView } from "styles/geek_cats/main.slint";
+import { GlobalState } from "globals.slint";
+import "fonts/04B_30.ttf";
+
+export * from "globals.slint";
+
+export component AppWindow inherits Window {
+    min-width: 512px;
+    min-height: 736px;
+    View {}
+    SettingsView {
+        x: GlobalState.settings_menu_opened ? 0 : -self.width;
+        visible: self.x != -self.width;
+        animate x {
+            duration: 0.2s;
+            easing: ease-out;
+        }
+    }
+}

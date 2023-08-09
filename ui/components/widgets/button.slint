@@ -1,0 +1,27 @@
+export component Button inherits Rectangle {
+    width: reference_image.width * 1.1;
+    height: reference_image.height * 1.1;
+    in property<image> source;
+    in property<brush> colorize;
+    out property<bool> has-hover <=> area.has-hover;
+    out property<bool> pressed <=> area.pressed;
+    callback clicked <=> area.clicked;
+    area := TouchArea {}
+    image := Image {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: area.pressed ? self.preferred-width * 0.9 : self.preferred-width * (area.has-hover ? 1.1 : 1);
+        source: parent.source;
+        colorize: parent.colorize;
+        animate width {
+            duration: 60ms;
+        }
+        animate height {
+            duration: 60ms;
+        }
+    }
+    reference_image := Image {
+        visible: false;
+        source: parent.source;
+    }
+}

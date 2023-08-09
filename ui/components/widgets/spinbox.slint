@@ -1,0 +1,80 @@
+import { Button } from "button.slint";
+
+export component SpinBox inherits HorizontalLayout {
+    in property<length> font-size: 32px;
+    in property<string> font-family: "04B";
+    in property<color> background;
+
+    in-out property<int> value: 0;
+    in-out property<int> max: 100;
+    in-out property<int> min: 0;
+
+    callback changed;
+
+    rect := Rectangle {
+        background: background;
+        height: font-size + 8px;
+        width: (Math.ceil(Math.log(max, 10)) + 2) * font-size;
+        input := TextInput {
+            color: white;
+            x: -2px;
+            height: font-size;
+            text: "\{value}";
+            font-family: font-family;
+            font-size: font-size;
+            horizontal-alignment: right;
+
+            edited => {
+                if (!self.text.is-float()) {
+                    if (self.text == "") {
+                        value = Math.max(0, min);
+                        self.text = "\{value}";
+                        changed();
+                    } else {
+                        self.text = "\{value}";
+                    }
+                } else {
+                    if (Math.floor(self.text.to-float()) > max || Math.floor(self.text.to-float()) < min) {
+                        self.text = "\{value}";
+                    } else {
+                        value = Math.floor(self.text.to-float());
+                        // To prevent the user from spamming a bunch of insignificant 0's
+                        self.text = "\{value}";
+                        changed();
+                    }
+                } 
+            }
+        }
+    }
+
+    function change_value(delta: int) {
+        if (self.value + delta <= max && self.value + delta >= min) {
+            self.value += delta;
+            input.text = "\{value}"
+        }
+    }
+
+    Rectangle {
+        background: background;
+        height: rect.height;
+        VerticalLayout {
+            padding: 8px;
+            alignment: space-around;
+            Button {
+                source: @image-url("images/arrow.png");
+                clicked => {
+                    change_value(1);
+                    changed();
+                }
+            }
+
+            Button {
+                source: @image-url("images/arrow-flipped.png");
+                clicked => {
+                    change_value(-1);
+                    changed();
+                }
+            }
+        }
+    }
+}

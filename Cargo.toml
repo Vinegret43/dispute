@@ -1,0 +1,21 @@
+[package]
+name = "pomeowdoro"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.dev]
+strip = "debuginfo"
+
+[dependencies]
+ui = { path = "ui" }
+
+serde = { version = "1.0.138", features = ["derive"] }
+serde_yaml = "0.9.25"
+directories = "5.0.1"
+async-std = { version = "1.12.0" }
+image = { version = "0.24.6", default-features = false, features = ["gif"] }
+# rodio = { version = "0.17.1", default-features = false, features = ["mp3"] }
+# tray-item = "0.7.0"
+# notify-rust = "4.8.0"

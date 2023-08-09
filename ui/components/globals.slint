@@ -1,0 +1,44 @@
+export enum Status {
+    Stopped,
+    Work,
+    Break,
+    LongBreak,
+}
+ 
+export struct Settings {
+    pomodoro_duration: duration,
+    short_break_duration: duration,
+    long_break_duration: duration,
+    pomodoros_in_cycle: int,
+}
+
+export global GlobalState {
+    public pure function interval_duration() -> duration {
+        if (self.status == Status.Work) {
+            return self.settings.pomodoro_duration;
+        } else if (self.status == Status.Break) {
+            return self.settings.short_break_duration;
+        } else if (self.status == Status.LongBreak) {
+            return self.settings.long_break_duration;
+        }
+        return 1s;
+    }
+
+    in-out property<Status> status;
+    in-out property<duration> timer_start_time;
+    in-out property<duration> current_time;
+    in-out property<int> pomodoros_completed: 0;
+    in-out property<Settings> settings: {
+        pomodoro_duration: 25 * 60s,
+        short_break_duration: 5 * 60s,
+        long_break_duration: 10 * 60s,
+        pomodoros_in_cycle: 4,
+    };
+    in-out property<bool> settings_menu_opened: false;
+}
+
+export global GlobalCallbacks {
+    callback start_timer;
+    callback stop_timer;
+    callback settings_update;
+}
