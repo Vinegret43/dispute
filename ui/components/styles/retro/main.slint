@@ -1,0 +1,87 @@
+
+import { Palette } from "palette.slint";
+import { Button } from "button.slint";
+import { GlobalState, GlobalCallbacks, Status } from "../../globals.slint";
+import { SevenSegment } from "seven_segment.slint";
+import { Segment } from "segment.slint";
+
+export component View inherits Rectangle {
+    background: Palette.background;
+    Button {
+        x: 24px;
+        y: 24px;
+        movable_part: @image-url("images/settings_movable.png");
+        stationary_part: @image-url("images/button_stationary.png");
+        upscaling_factor: 6;
+    }
+
+    Rectangle {
+        y: parent.height - 120px;
+        property<length> margin: 96px;
+        width: button.width * 2 + margin;
+        height: button.height;
+        button := Button {
+            x: 0px;
+            movable_part: @image-url("images/start_movable.png");
+            stationary_part: @image-url("images/button_stationary.png");
+            upscaling_factor: 6;
+            stick: GlobalState.status != Status.Stopped;
+            clicked => {
+                if (GlobalState.status == Status.Stopped) {
+                    GlobalCallbacks.start_timer();
+                }
+            }
+        }
+
+        Button {
+            x: button.width + margin;
+            movable_part: @image-url("images/stop_movable.png");
+            stationary_part: @image-url("images/button_stationary.png");
+            upscaling_factor: 6;
+            stick: GlobalState.status == Status.Stopped;
+            clicked => {
+                if (GlobalState.status != Status.Stopped) {
+                    GlobalCallbacks.stop_timer();
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        height: seg.height;
+        HorizontalLayout {
+            pure function remaining_time(current_time: duration) -> duration {
+                return GlobalState.timer_start_time
+                    + GlobalState.settings.pomodoro_duration
+                    - current_time;
+            }
+            spacing: 18px;
+            alignment: center;
+            seg := SevenSegment {
+                upscaling_factor: 6;
+                digit: GlobalState.status == Status.Stopped ? 0 : remaining_time(GlobalState.current_time) / 1s / 60 / 10;
+            }
+            SevenSegment {
+                upscaling_factor: 6;
+                digit: GlobalState.status == Status.Stopped ? 0 : Math.mod(remaining_time(GlobalState.current_time) / 1s / 60, 10);
+            }
+            Rectangle {
+                Segment {
+                    movable_part: @image-url("images/column_moving.png");
+                    stationary_part: @image-url("images/column_stationary.png");
+                    active: true;
+                    move_pixels: 1px;
+                    upscaling_factor: 6;
+                }
+            }
+            SevenSegment {
+                upscaling_factor: 6;
+                digit: GlobalState.status == Status.Stopped ? 0 : Math.mod(remaining_time(GlobalState.current_time) / 1s, 60) / 10;
+            }
+            SevenSegment {
+                upscaling_factor: 6;
+                digit: GlobalState.status == Status.Stopped ? 0 : Math.mod(Math.mod(remaining_time(GlobalState.current_time) / 1s, 60), 10);
+            }
+        }
+    }
+}

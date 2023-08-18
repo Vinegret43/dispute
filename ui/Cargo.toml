@@ -11,7 +11,7 @@ edition = "2021"
 opt-level = 3
 
 [dependencies]
-slint = { version = "1.1.1", default-features = false, features = ["std", "compat-1-0", "backend-winit", "renderer-winit-skia"] }
+slint = { version = "1.1.1", default-features = false, features = ["std", "compat-1-0", "backend-qt"] }
 
 [build-dependencies]
 slint-build = "1.1.1"

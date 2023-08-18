@@ -1,0 +1,39 @@
+export component Button inherits Rectangle {
+    in property<image> movable_part;
+    in property<image> stationary_part;
+    in property<int> upscaling_factor: 1;
+    in property<bool> stick: false;
+
+    callback clicked <=> touch.clicked;
+
+    width: img.width;
+    height: img.height;
+
+    Image {
+        source: movable_part;
+        width: movable_part.width * upscaling_factor * 1px;
+        height: movable_part.height * upscaling_factor * 1px;
+        image-rendering: pixelated;
+        y: touch.pressed || stick ? upscaling_factor * 1px : 0;
+        animate y {
+            duration: 0.03s;
+            easing: ease-in;
+        }
+    }
+
+    Image {
+        source: stationary_part;
+        width: stationary_part.width * upscaling_factor * 1px;
+        height: stationary_part.height * upscaling_factor * 1px;
+        image-rendering: pixelated;
+    }
+
+    img := Image {
+        source: movable_part;
+        width: movable_part.width * upscaling_factor * 1px;
+        height: movable_part.height * upscaling_factor * 1px;
+        visible: false;
+    }
+
+    touch := TouchArea {}
+}

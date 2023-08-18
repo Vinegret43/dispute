@@ -1,4 +1,5 @@
 pub mod settings;
+pub mod styles;
 
 use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
@@ -11,11 +12,8 @@ fn main() {
 
     // Setup
     let state = app.global::<GlobalState>();
-    match Settings::load() {
-        Ok(settings) => {
-            state.set_settings(settings.into());
-        }
-        Err(_) => (),
+    if let Ok(settings) = Settings::load()  {
+        state.set_settings(settings.into());
     }
 
     // Callbacks

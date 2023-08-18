@@ -55,13 +55,13 @@ impl From<ui::Settings> for Settings {
     }
 }
 
-impl Into<ui::Settings> for Settings {
-    fn into(self) -> ui::Settings {
+impl From<Settings> for ui::Settings {
+    fn from(val: Settings) -> ui::Settings {
         ui::Settings {
-            pomodoro_duration: self.pomodoro_duration,
-            short_break_duration: self.short_break_duration,
-            long_break_duration: self.long_break_duration,
-            pomodoros_in_cycle: self.pomodoros_in_cycle,
+            pomodoro_duration: val.pomodoro_duration,
+            short_break_duration: val.short_break_duration,
+            long_break_duration: val.long_break_duration,
+            pomodoros_in_cycle: val.pomodoros_in_cycle,
         }
     }
 }

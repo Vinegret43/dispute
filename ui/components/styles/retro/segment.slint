@@ -1,0 +1,45 @@
+import { Palette } from "palette.slint";
+
+export component Segment inherits Rectangle {
+    in property<image> movable_part;
+    in property<image> stationary_part;
+    in property<int> upscaling_factor: 1;
+    in property<bool> active: false;
+    in property<length> move_pixels: 2px;
+
+    width: img.width;
+    height: img.height;
+
+    Image {
+        source: movable_part;
+        width: movable_part.width * upscaling_factor * 1px;
+        height: movable_part.height * upscaling_factor * 1px;
+        image-rendering: pixelated;
+        y: active ? 0 : upscaling_factor * move_pixels;
+        animate y {
+            duration: 0.1s;
+        }
+        Rectangle {
+            background: Palette.background;
+            opacity: active ? 0 : 1;
+            animate opacity {
+                duration: 0.1s;
+                easing: ease-in;
+            }
+        }
+    }
+
+    Image {
+        source: stationary_part;
+        width: stationary_part.width * upscaling_factor * 1px;
+        height: stationary_part.height * upscaling_factor * 1px;
+        image-rendering: pixelated;
+    }
+
+    img := Image {
+        source: movable_part;
+        width: movable_part.width * upscaling_factor * 1px;
+        height: movable_part.height * upscaling_factor * 1px;
+        visible: false;
+    }
+}
