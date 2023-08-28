@@ -4,17 +4,23 @@ import { Button } from "button.slint";
 import { GlobalState, GlobalCallbacks, Status } from "../../globals.slint";
 import { SevenSegment } from "seven_segment.slint";
 import { Segment } from "segment.slint";
+import { SettingsView } from "settings.slint";
+import { StatusDisplay } from "status.slint";
+
+component Button inherits Button {
+    button_down => {
+        GlobalCallbacks.play_click_down_sound();
+    }
+    button_up => {
+        GlobalCallbacks.play_click_up_sound();
+    }
+}
 
 export component View inherits Rectangle {
+    property<bool> settings_opened: false;
     background: Palette.background;
-    Button {
-        x: 24px;
-        y: 24px;
-        movable_part: @image-url("images/settings_movable.png");
-        stationary_part: @image-url("images/button_stationary.png");
-        upscaling_factor: 6;
-    }
 
+    // Start/stop buttons
     Rectangle {
         y: parent.height - 120px;
         property<length> margin: 96px;
@@ -25,9 +31,9 @@ export component View inherits Rectangle {
             movable_part: @image-url("images/start_movable.png");
             stationary_part: @image-url("images/button_stationary.png");
             upscaling_factor: 6;
-            stick: GlobalState.status != Status.Stopped;
+            stick: GlobalState.status != Status.Stopped && !GlobalState.paused;
             clicked => {
-                if (GlobalState.status == Status.Stopped) {
+                if (GlobalState.status == Status.Stopped || GlobalState.paused) {
                     GlobalCallbacks.start_timer();
                 }
             }
@@ -47,12 +53,12 @@ export component View inherits Rectangle {
         }
     }
 
-    Rectangle {
+    timer := Rectangle {
         height: seg.height;
         HorizontalLayout {
             pure function remaining_time(current_time: duration) -> duration {
                 return GlobalState.timer_start_time
-                    + GlobalState.settings.pomodoro_duration
+                    + GlobalState.interval_duration()
                     - current_time;
             }
             spacing: 18px;
@@ -82,6 +88,37 @@ export component View inherits Rectangle {
                 upscaling_factor: 6;
                 digit: GlobalState.status == Status.Stopped ? 0 : Math.mod(Math.mod(remaining_time(GlobalState.current_time) / 1s, 60), 10);
             }
+        }
+    }
+
+    StatusDisplay {
+        y: parent.height / 2 - timer.height / 2 - self.height - 24px;
+        scaling_factor: 6;
+    }
+
+    // Settings drawer
+    Rectangle {
+        background: Palette.background;
+        visible: self.x != -parent.width;
+        x: settings_opened ? 0 : -parent.width;
+        animate x {
+            duration: 0.15s;
+            easing: ease-out;
+        }
+        SettingsView {
+            y: 90px;
+        }
+    }
+
+    // Settings open/close button
+    Button {
+        x: 24px;
+        y: 24px;
+        movable_part: settings_opened ? @image-url("images/close_movable.png") : @image-url("images/settings_movable.png");
+        stationary_part: @image-url("images/button_stationary.png");
+        upscaling_factor: 6;
+        clicked => {
+            settings_opened = !settings_opened;
         }
     }
 }

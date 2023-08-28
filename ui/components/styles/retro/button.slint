@@ -5,6 +5,8 @@ export component Button inherits Rectangle {
     in property<bool> stick: false;
 
     callback clicked <=> touch.clicked;
+    callback button_down;
+    callback button_up;
 
     width: img.width;
     height: img.height;
@@ -35,5 +37,16 @@ export component Button inherits Rectangle {
         visible: false;
     }
 
-    touch := TouchArea {}
+    touch := TouchArea {
+        pointer-event(event) => {
+            if (stick) {
+                return;
+            }
+            if (event.kind == PointerEventKind.down && event.button == PointerEventButton.left) {
+                button_down();
+            } else if (event.kind == PointerEventKind.up && event.button == PointerEventButton.left) {
+                button_up();
+            }
+        }
+    }
 }

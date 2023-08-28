@@ -1,81 +1,113 @@
+pub mod audio;
+pub mod barrier;
+pub mod debug;
+pub mod notifications;
 pub mod settings;
 pub mod styles;
+pub mod utils;
 
 use std::thread;
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
+use std::time::Duration;
 
-use settings::Settings;
+use async_std::task;
+use barrier::Barrier;
 use ui::{AppWindow, ComponentHandle, GlobalCallbacks, GlobalState, Status};
+use notify_rust::{Timeout, ActionResponse};
 
 fn main() {
     let app = AppWindow::new().unwrap();
-
-    // Setup
-    let state = app.global::<GlobalState>();
-    if let Ok(settings) = Settings::load()  {
-        state.set_settings(settings.into());
-    }
+    settings::apply_saved_settings(&app);
+    debug::apply_debug_durations(&app);
 
     // Callbacks
     let callbacks = app.global::<GlobalCallbacks>();
-    let app_clone = app.clone_strong();
-    callbacks.on_start_timer(move || {
-        let state = app_clone.global::<GlobalState>();
-        state.set_status(Status::Work);
-        state.set_timer_start_time(current_time());
-        state.set_current_time(current_time());
-    });
-    let app_clone = app.clone_strong();
-    callbacks.on_stop_timer(move || {
-        let state = app_clone.global::<GlobalState>();
+
+    let barrier = Barrier::new();
+    callbacks.on_start_timer(clone_army!([app, barrier] move || {
+        let state = app.global::<GlobalState>();
+        if state.get_paused() {
+            barrier.unlock();
+        } else {
+            state.set_status(Status::Work);
+            state.set_timer_start_time(utils::current_time());
+            state.set_current_time(utils::current_time());
+        }
+    }));
+
+    callbacks.on_stop_timer(clone_army!([app, barrier] move || {
+        let state = app.global::<GlobalState>();
         state.set_status(Status::Stopped);
-    });
-    let app_clone = app.clone_strong();
-    callbacks.on_settings_update(move || {
-        let state = app_clone.global::<GlobalState>();
-        let settings: Settings = state.get_settings().into();
-        // Don't block the UI thread
-        thread::spawn(move || {
-            settings.save().ok();
-        });
-    });
+        barrier.unlock();
+    }));
 
-    // Background jobs
-    let app_clone = app.clone_strong();
-    ui::spawn_local(async move {
-        let state = app_clone.global::<GlobalState>();
+    callbacks.on_settings_update(clone_army!([app] move || {
+        settings::save_settings(&app);
+    }));
+
+    audio::apply_callbacks(callbacks);
+
+    ui::spawn_local(clone_army!([app, barrier] async move {
+        let state = app.global::<GlobalState>();
         loop {
-            state.set_current_time(current_time());
+            state.set_current_time(utils::current_time());
 
-            if current_time() > state.get_timer_start_time() + state.invoke_interval_duration() {
+            if utils::current_time()
+                > state.get_timer_start_time() + state.invoke_interval_duration()
+            {
                 match state.get_status() {
                     Status::Work => {
+                        notifications::notification()
+                            .body("Go and get some rest!")
+                            .finalize().show_async().await.ok();
                         let pomodoros_completed = state.get_pomodoros_completed() + 1;
                         state.set_pomodoros_completed(pomodoros_completed);
                         if (pomodoros_completed % state.get_settings().pomodoros_in_cycle) == 0 {
                             state.set_status(Status::LongBreak);
-                            state.set_timer_start_time(current_time());
                         } else {
                             state.set_status(Status::Break);
-                            state.set_timer_start_time(current_time());
                         }
-                    },
+                        state.set_timer_start_time(utils::current_time());
+                    }
                     Status::Break | Status::LongBreak => {
+                        state.set_paused(true);
+                        let handle = match notifications::notification()
+                            .body("Ready to continue working?")
+                            .action("continue", "Continue")
+                            .timeout(Timeout::Never)
+                            .finalize()
+                            .show_async().await {
+                                Ok(handle) => {
+                                    let id = handle.id();
+                                    thread::spawn(clone_army!([barrier] move ||
+                                    notify_rust::handle_action(id, |action| {
+                                        if let ActionResponse::Custom("continue") = action {
+                                            barrier.unlock()
+                                        }
+                                    })));
+                                    Some(handle)
+                                }
+                                Err(_) => None,
+                        };
+
+                        barrier.wait().await;
+                        if let Some(handle) = handle {
+                            handle.close()
+                        }
+                        state.set_paused(false);
+                        if state.get_status() == Status::Stopped {
+                            continue;
+                        }
                         state.set_status(Status::Work);
-                        state.set_timer_start_time(current_time());
-                    },
+                        state.set_timer_start_time(utils::current_time());
+                    }
                     Status::Stopped => (),
                 }
             }
 
-            async_std::task::sleep(Duration::from_millis(100)).await;
+            task::sleep(Duration::from_millis(100)).await;
         }
-    })
+    }))
     .unwrap();
 
     app.run().ok();
-}
-
-fn current_time() -> i64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as i64
 }

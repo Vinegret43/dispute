@@ -28,17 +28,20 @@ export global GlobalState {
     in-out property<duration> timer_start_time;
     in-out property<duration> current_time;
     in-out property<int> pomodoros_completed: 0;
+    in-out property<bool> paused;
     in-out property<Settings> settings: {
         pomodoro_duration: 25 * 60s,
         short_break_duration: 5 * 60s,
-        long_break_duration: 10 * 60s,
+        long_break_duration: 15 * 60s,
         pomodoros_in_cycle: 4,
     };
-    in-out property<bool> settings_menu_opened: false;
 }
 
 export global GlobalCallbacks {
     callback start_timer;
     callback stop_timer;
     callback settings_update;
+
+    callback play_click_down_sound;
+    callback play_click_up_sound;
 }

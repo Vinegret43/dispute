@@ -1,0 +1,79 @@
+import { SpinBox } from "../../widgets/spinbox.slint";
+import { Palette } from "palette.slint";
+import { GlobalState, GlobalCallbacks } from "../../globals.slint";
+
+export component SettingsView inherits Rectangle {
+    property<length> font-size: 48px;
+    GridLayout {
+        padding: 16px;
+        spacing: 8px;
+        Row {
+            Text {
+                text: "Work minutes";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            SpinBox {
+                background: Palette.background_dark;
+                value: GlobalState.settings.pomodoro_duration / 60s;
+                min: 1;
+                max: 99;
+                changed => {
+                    GlobalState.settings.pomodoro_duration = self.value * 60s;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+        Row {
+            Text {
+                text: "Rest minutes";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            SpinBox {
+                background: Palette.background_dark;
+                value: GlobalState.settings.short_break_duration / 60s;
+                min: 1;
+                max: 99;
+                changed => {
+                    GlobalState.settings.short_break_duration = self.value * 60s;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+        Row {
+            Text {
+                text: "Long rest minutes";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            SpinBox {
+                background: Palette.background_dark;
+                value: GlobalState.settings.long_break_duration / 60s;
+                min: 1;
+                max: 99;
+                changed => {
+                    GlobalState.settings.long_break_duration = self.value * 60s;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+        Row {
+            Text {
+                text: "Pomodoros per cycle";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            SpinBox {
+                max: 20;
+                min: 1;
+                background: Palette.background_dark;
+                value: GlobalState.settings.pomodoros_in_cycle;
+                changed => {
+                    GlobalState.settings.pomodoros_in_cycle = self.value;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+    }
+}

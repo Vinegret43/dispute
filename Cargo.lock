@@ -218,6 +218,7 @@ dependencies = [
  "async-global-executor",
  "async-io",
  "async-lock",
+ "async-process",
  "crossbeam-utils",
  "futures-channel",
  "futures-core",
@@ -2513,7 +2514,6 @@ version = "0.1.0"
 dependencies = [
  "async-std",
  "directories",
- "image",
  "notify-rust",
  "rodio",
  "serde",

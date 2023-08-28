@@ -1,7 +1,10 @@
+use ui::{AppWindow, ComponentHandle, GlobalState};
+
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::{self, File};
+use std::thread;
 
 #[derive(Serialize, Deserialize)]
 pub struct Settings {
@@ -9,6 +12,22 @@ pub struct Settings {
     short_break_duration: i64,
     long_break_duration: i64,
     pomodoros_in_cycle: i32,
+}
+
+pub fn apply_saved_settings(app: &AppWindow) {
+    let state = app.global::<GlobalState>();
+    if let Ok(settings) = Settings::load() {
+        state.set_settings(settings.into());
+    }
+}
+
+pub fn save_settings(app: &AppWindow) {
+    let state = app.global::<GlobalState>();
+    let settings: Settings = state.get_settings().into();
+    // Don't block UI thread
+    thread::spawn(move || {
+        settings.save().ok();
+    });
 }
 
 impl Settings {
@@ -20,7 +39,7 @@ impl Settings {
                     fs::create_dir_all(config_dir)?;
                 }
                 Ok(serde_yaml::from_reader(File::open(
-                    config_dir.join("config.toml"),
+                    config_dir.join("config.yaml"),
                 )?)?)
             }
             None => Err("Could not compute project dirs".into()),
@@ -35,7 +54,7 @@ impl Settings {
                     fs::create_dir_all(config_dir)?;
                 }
                 Ok(serde_yaml::to_writer(
-                    File::create(config_dir.join("config.toml"))?,
+                    File::create(config_dir.join("config.yaml"))?,
                     self,
                 )?)
             }

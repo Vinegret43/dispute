@@ -1,0 +1,78 @@
+import { GlobalState, Status } from "../../globals.slint";
+
+component Image inherits Image {
+    image-rendering: pixelated;
+}
+
+export component StatusDisplay inherits Rectangle {
+    in property<int> scaling_factor: 1;
+    width: Math.max(idle.width, work.width, rest.width);
+    height: Math.max(idle.height, work.height, rest.height);
+
+    idle := Image {
+        source: @image-url("images/statuses/idle.png");
+        width: self.source.width * scaling_factor * 1px;
+        opacity: 0;
+        y: scaling_factor * 1px;
+    }
+    work := Image {
+        source: @image-url("images/statuses/work.png");
+        width: self.source.width * scaling_factor * 1px;
+        opacity: 0;
+        y: scaling_factor * 1px;
+    }
+    rest := Image {
+        source: @image-url("images/statuses/rest.png");
+        width: self.source.width * scaling_factor * 1px;
+        opacity: 0;
+        y: scaling_factor * 1px;
+    }
+
+    states [
+        idle when GlobalState.status == Status.Stopped : {
+            idle.opacity: 1;
+            idle.y: 0;
+            out {
+                animate idle.opacity, idle.y {
+                    duration: 0.1s;
+                }
+            }
+            in {
+                animate idle.opacity, idle.y {
+                    duration: 0.1s;
+                    delay: 0.1s;
+                }
+            }
+        }
+        work when GlobalState.status == Status.Work : {
+            work.opacity: 1;
+            work.y: 0;
+            out {
+                animate work.opacity, work.y {
+                    duration: 0.1s;
+                }
+            }
+            in {
+                animate work.opacity , work.y{
+                    duration: 0.1s;
+                    delay: 0.1s;
+                }
+            }
+        }
+        rest when GlobalState.status == Status.Break || GlobalState.status == Status.LongBreak : {
+            rest.opacity: 1;
+            rest.y: 0;
+            out {
+                animate rest.opacity, rest.y {
+                    duration: 0.1s;
+                }
+            }
+            in {
+                animate rest.opacity , rest.y{
+                    duration: 0.1s;
+                    delay: 0.1s;
+                }
+            }
+        }
+    ]
+}

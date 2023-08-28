@@ -1,8 +1,8 @@
 import { Button } from "button.slint";
 
 export component SpinBox inherits HorizontalLayout {
-    in property<length> font-size: 32px;
-    in property<string> font-family: "04B";
+    spacing: -1px;
+    in property<length> font-size: 48px;
     in property<color> background;
 
     in-out property<int> value: 0;
@@ -14,13 +14,13 @@ export component SpinBox inherits HorizontalLayout {
     rect := Rectangle {
         background: background;
         height: font-size + 8px;
-        width: (Math.ceil(Math.log(max, 10)) + 2) * font-size;
+        width: (Math.floor(Math.log(max, 10)) + 1) * font-size;
         input := TextInput {
             color: white;
-            x: -2px;
             height: font-size;
             text: "\{value}";
-            font-family: font-family;
+            y: 5px;
+            x: -2px;
             font-size: font-size;
             horizontal-alignment: right;
 
