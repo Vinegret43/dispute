@@ -6,6 +6,7 @@ use ui::GlobalCallbacks;
 
 pub const CLICK_DOWN_SOUND: &[u8] = include_bytes!("../assets/audio/click_down.mp3");
 pub const CLICK_UP_SOUND: &[u8] = include_bytes!("../assets/audio/click_up.mp3");
+pub const RING_SOUND: &[u8] = include_bytes!("../assets/audio/ring.mp3");
 
 pub fn apply_callbacks(callbacks: GlobalCallbacks) {
     callbacks.on_play_click_down_sound(|| {

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Dispute
+Comment=The Damn Stylish Pomodoro Timer
+Keywords=productivity;pomodoro;timer
+Exec={} %f
+Icon=dispute
+Terminal=false
+Type=Application
+Categories=Office

@@ -950,6 +950,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dispute"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "directories",
+ "notify-rust",
+ "rodio",
+ "serde",
+ "serde_yaml",
+ "tray-item",
+ "ui",
+]
+
+[[package]]
 name = "dunce"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2506,20 +2520,6 @@ dependencies = [
  "log",
  "pin-project-lite",
  "windows-sys",
-]
-
-[[package]]
-name = "pomeowdoro"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "directories",
- "notify-rust",
- "rodio",
- "serde",
- "serde_yaml",
- "tray-item",
- "ui",
 ]
 
 [[package]]

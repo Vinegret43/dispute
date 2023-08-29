@@ -3,10 +3,9 @@ pub mod barrier;
 pub mod debug;
 pub mod notifications;
 pub mod settings;
-pub mod styles;
 pub mod utils;
 
-use std::thread;
+use std::{thread, env};
 use std::time::Duration;
 
 use async_std::task;
@@ -18,6 +17,9 @@ fn main() {
     let app = AppWindow::new().unwrap();
     settings::apply_saved_settings(&app);
     debug::apply_debug_durations(&app);
+    if env::args().any(|s| s == "--install") {
+        utils::install_desktop_files().ok();
+    }
 
     // Callbacks
     let callbacks = app.global::<GlobalCallbacks>();
@@ -59,6 +61,9 @@ fn main() {
                         notifications::notification()
                             .body("Go and get some rest!")
                             .finalize().show_async().await.ok();
+                        ui::spawn_local(async {
+                            audio::play_sound(audio::RING_SOUND).await;
+                        }).ok();
                         let pomodoros_completed = state.get_pomodoros_completed() + 1;
                         state.set_pomodoros_completed(pomodoros_completed);
                         if (pomodoros_completed % state.get_settings().pomodoros_in_cycle) == 0 {
@@ -70,7 +75,11 @@ fn main() {
                     }
                     Status::Break | Status::LongBreak => {
                         state.set_paused(true);
+                        ui::spawn_local(async {
+                            audio::play_sound(audio::RING_SOUND).await;
+                        }).ok();
                         let handle = match notifications::notification()
+                            .summary("Time's up")
                             .body("Ready to continue working?")
                             .action("continue", "Continue")
                             .timeout(Timeout::Never)

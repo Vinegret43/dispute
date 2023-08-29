@@ -6,7 +6,7 @@ use ui::{AppWindow, ComponentHandle, GlobalState};
 /// environment variable is set. Useful for debugging purposes so you
 /// don't have to wait for too long
 pub fn apply_debug_durations(app: &AppWindow) {
-    if let Ok(_) = env::var("DEBUG_DURATIONS") {
+    if env::var("DEBUG_DURATIONS").is_ok() {
         let state = app.global::<GlobalState>();
         let mut settings = state.get_settings();
         settings.pomodoro_duration = 5000;
