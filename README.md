@@ -1,11 +1,11 @@
 
 <div align="Center" display="inline-block">
 <img src="assets/dispute.png" width="128px"/>
-<div/>
+</div>
 
 
 # DiSPuTe
-<img src="assets/screenshot.jpg" align="right" height="250px"/>
+<img src="assets/screenshot.jpg" align="right" height="300px"/>
 
 **The Damn Stylish Pomodoro Timer**
 
