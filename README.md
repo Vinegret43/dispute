@@ -3,7 +3,9 @@
 <img src="assets/dispute.png" width="128px"/>
 <div/>
 
+
 # DiSPuTe
+<img src="assets/screenshot.jpg" align="right" height="250px"/>
 
 **The Damn Stylish Pomodoro Timer**
 
