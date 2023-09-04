@@ -17,5 +17,5 @@ serde_yaml = "0.9.25"
 directories = "5.0.1"
 async-std = { version = "1.12.0", features = ["unstable"] }
 rodio = { version = "0.17.1", default-features = false, features = ["mp3"] }
-# tray-item = "0.7.0"
+tray-item = "0.7.1"
 notify-rust = "4.8.0"
