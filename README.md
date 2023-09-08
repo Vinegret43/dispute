@@ -17,6 +17,9 @@ Dispute contains only what you really need to actually get work done
 
 ✨ Clean, yet beautiful and unique UI design with animations and sound effects
 
+💻 Dispute can hide its window and quietly sit in your tray. Just launch it
+again to re-open the window
+
 🦀 <s>Written in Ru</s> Is this even a feature in the modern day?
 
 
