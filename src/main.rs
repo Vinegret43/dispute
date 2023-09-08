@@ -1,17 +1,20 @@
 pub mod audio;
 pub mod barrier;
-pub mod debug;
-pub mod notifications;
-pub mod settings;
+mod debug;
+mod instance;
+mod notifications;
+mod settings;
+mod tray;
 pub mod utils;
 
-use std::{thread, env};
 use std::time::Duration;
+use std::{env, thread};
 
 use async_std::task;
 use barrier::Barrier;
+use instance::{Instance, InstanceError};
+use notify_rust::{ActionResponse, Timeout};
 use ui::{AppWindow, ComponentHandle, GlobalCallbacks, GlobalState, Status};
-use notify_rust::{Timeout, ActionResponse};
 
 fn main() {
     let app = AppWindow::new().unwrap();
@@ -20,6 +23,7 @@ fn main() {
     if env::args().any(|s| s == "--install") {
         utils::install_desktop_files().ok();
     }
+    tray::setup_tray(&app);
 
     // Callbacks
     let callbacks = app.global::<GlobalCallbacks>();
@@ -47,6 +51,28 @@ fn main() {
     }));
 
     audio::apply_callbacks(callbacks);
+
+    match Instance::new() {
+        Ok(instance) => {
+            let weak = app.as_weak();
+            ui::spawn_local(async move {
+                loop {
+                    instance.wait_for_another_instance_launch().await.unwrap();
+                    weak.upgrade_in_event_loop(|app| {
+                        app.window().show().unwrap();
+                    })
+                    .unwrap();
+                }
+            })
+            .unwrap();
+        }
+        Err(InstanceError::IsLocked) => {
+            // TODO: Add flag to disable this and launch anyway
+            println!("Another instance is already running, exiting");
+            return;
+        }
+        Err(InstanceError::Other(e)) => println!("Error: {}", e),
+    };
 
     ui::spawn_local(clone_army!([app, barrier] async move {
         let state = app.global::<GlobalState>();
@@ -118,5 +144,9 @@ fn main() {
     }))
     .unwrap();
 
-    app.run().ok();
+    app.window().show().unwrap();
+    let state = app.global::<GlobalState>();
+    while !state.get_quit_app() {
+        ui::run_event_loop().unwrap();
+    }
 }

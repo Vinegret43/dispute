@@ -1,8 +1,8 @@
 use directories::BaseDirs;
 
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::path::PathBuf;
-use std::{fs, env};
+use std::time::{SystemTime, UNIX_EPOCH};
+use std::{env, fs};
 
 pub fn current_time() -> i64 {
     SystemTime::now()
@@ -19,7 +19,6 @@ pub fn capitalize(s: &str) -> String {
     }
 }
 
-
 const DESKTOP_FILE: &str = include_str!("../assets/dispute.desktop");
 const ICON: &[u8] = include_bytes!("../assets/dispute.png");
 pub fn install_desktop_files() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,8 +28,14 @@ pub fn install_desktop_files() -> Result<(), Box<dyn std::error::Error>> {
     let icons_dir = try_create_dir(home.join(".local/share/icons/"))?;
     let desktop_file_path = apps_dir.join("dispute.desktop");
 
-    if let Ok(()) = fs::write(&desktop_file_path, DESKTOP_FILE.replace("{}", &format!("{}", env::current_exe()?.display()))) {
-        println!("Created the desktop file at {}", desktop_file_path.display());
+    if let Ok(()) = fs::write(
+        &desktop_file_path,
+        DESKTOP_FILE.replace("{}", &format!("{}", env::current_exe()?.display())),
+    ) {
+        println!(
+            "Created the desktop file at {}",
+            desktop_file_path.display()
+        );
     }
 
     let icon_file_path = icons_dir.join("dispute.png");
@@ -39,6 +44,16 @@ pub fn install_desktop_files() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
+}
+
+pub fn rgba_into_argb(b: Vec<u8>) -> Vec<u8> {
+    let mut argb = Vec::new();
+    for chunk in b.chunks(4) {
+        let mut chunk = Vec::from(chunk);
+        chunk.rotate_right(1);
+        argb.extend_from_slice(&chunk);
+    }
+    argb
 }
 
 #[derive(Debug)]

@@ -29,6 +29,7 @@ export global GlobalState {
     in-out property<duration> current_time;
     in-out property<int> pomodoros_completed: 0;
     in-out property<bool> paused;
+    in-out property<bool> quit_app;
     in-out property<Settings> settings: {
         pomodoro_duration: 25 * 60s,
         short_break_duration: 5 * 60s,

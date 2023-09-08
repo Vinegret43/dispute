@@ -5,7 +5,7 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[profile.dev]
+[profile.release]
 strip = "debuginfo"
 opt-level = "s"
 
@@ -15,7 +15,11 @@ ui = { path = "ui" }
 serde = { version = "1.0.138", features = ["derive"] }
 serde_yaml = "0.9.25"
 directories = "5.0.1"
+image = { version = "0.24", default-features = false, features = ["png"] }
 async-std = { version = "1.12.0", features = ["unstable"] }
 rodio = { version = "0.17.1", default-features = false, features = ["mp3"] }
-tray-item = "0.7.1"
+tray-item = { version = "0.8.0", features = ["ksni"] }
 notify-rust = "4.8.0"
+dark-light = "1.0.0"
+notify = "6.1"
+fslock = "0.2.1"
