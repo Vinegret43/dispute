@@ -1,0 +1,3 @@
+aa-exe-icon ICON "assets/dispute.ico"
+icon-dark ICON "assets/dispute_tray_dark.ico"
+icon-light ICON "assets/dispute_tray_light.ico"

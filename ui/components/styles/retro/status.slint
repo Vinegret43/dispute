@@ -13,18 +13,21 @@ export component StatusDisplay inherits Rectangle {
         source: @image-url("images/statuses/idle.png");
         width: self.source.width * scaling_factor * 1px;
         opacity: 0;
+        visible: self.opacity != 0;
         y: scaling_factor * 1px;
     }
     work := Image {
         source: @image-url("images/statuses/work.png");
         width: self.source.width * scaling_factor * 1px;
         opacity: 0;
+        visible: self.opacity != 0;
         y: scaling_factor * 1px;
     }
     rest := Image {
         source: @image-url("images/statuses/rest.png");
         width: self.source.width * scaling_factor * 1px;
         opacity: 0;
+        visible: self.opacity != 0;
         y: scaling_factor * 1px;
     }
 

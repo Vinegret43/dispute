@@ -18,24 +18,27 @@ enum TrayAction {
     Quit,
 }
 
-pub fn setup_tray(win: &AppWindow) {
+pub fn setup_tray(win: &AppWindow) -> TrayItem {
     let icon = match dark_light::detect() {
         Mode::Dark => ICON_DARK,
         Mode::Light | Mode::Default => ICON_LIGHT,
     };
     let image = DynamicImage::from_decoder(PngDecoder::new(Cursor::new(icon)).unwrap()).unwrap();
-    // KSNI accepts image in ARGB format instead of RGBA. On Windows/OSX this
-    // may be different since they don't use KSNI
+    // KSNI accepts image in ARGB format instead of RGBA
     let data = utils::rgba_into_argb(image.into_rgba8().into_vec());
-    let mut tray = TrayItem::new(
-        "Dispute",
-        IconSource::Data {
-            data,
-            height: 256,
-            width: 256,
-        },
-    )
-    .unwrap();
+    #[cfg(target_family = "unix")]
+    let icon = IconSource::Data {
+        data,
+        height: 256,
+        width: 256,
+    };
+    #[cfg(target_family = "windows")]
+    let icon = match dark_light::detect() {
+        Mode::Dark => IconSource::Resource("icon-dark"),
+        Mode::Light | Mode::Default => IconSource::Resource("icon-light"),
+    };
+
+    let mut tray = TrayItem::new("Dispute", icon).unwrap();
     let (tx, rx) = channel::unbounded::<TrayAction>();
     ui::spawn_local(clone_army!([win] async move {
         let state = win.global::<GlobalState>();
@@ -83,4 +86,6 @@ pub fn setup_tray(win: &AppWindow) {
         }),
     )
     .ok();
+
+    tray
 }

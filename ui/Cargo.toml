@@ -10,8 +10,11 @@ edition = "2021"
 # actually speeds up compilation significantly
 opt-level = 3
 
-[dependencies]
-slint = { version = "1.2.0", default-features = false, features = ["std", "compat-1-0", "backend-qt"] }
+[target.'cfg(target_family = "windows")'.dependencies]
+slint = { version = "1.2.0", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-skia"] }
+
+[target.'cfg(target_family = "unix")'.dependencies]
+slint = { version = "1.2.0", default-features = false, features = ["std", "compat-1-2", "backend-qt"] }
 
 [build-dependencies]
 slint-build = "1.2.0"

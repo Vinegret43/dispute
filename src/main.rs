@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 pub mod audio;
 pub mod barrier;
 mod debug;
@@ -13,8 +15,11 @@ use std::{env, thread};
 use async_std::task;
 use barrier::Barrier;
 use instance::{Instance, InstanceError};
-use notify_rust::{ActionResponse, Timeout};
+use notify_rust::Timeout;
 use ui::{AppWindow, ComponentHandle, GlobalCallbacks, GlobalState, Status};
+
+#[cfg(target_family = "unix")]
+use notify_rust::ActionResponse;
 
 fn main() {
     let app = AppWindow::new().unwrap();
@@ -23,7 +28,7 @@ fn main() {
     if env::args().any(|s| s == "--install") {
         utils::install_desktop_files().ok();
     }
-    tray::setup_tray(&app);
+    let _tray = tray::setup_tray(&app);
 
     // Callbacks
     let callbacks = app.global::<GlobalCallbacks>();
@@ -86,7 +91,7 @@ fn main() {
                     Status::Work => {
                         notifications::notification()
                             .body("Go and get some rest!")
-                            .finalize().show_async().await.ok();
+                            .finalize().show().ok();
                         ui::spawn_local(async {
                             audio::play_sound(audio::RING_SOUND).await;
                         }).ok();
@@ -100,38 +105,48 @@ fn main() {
                         state.set_timer_start_time(utils::current_time());
                     }
                     Status::Break | Status::LongBreak => {
-                        state.set_paused(true);
                         ui::spawn_local(async {
                             audio::play_sound(audio::RING_SOUND).await;
                         }).ok();
-                        let handle = match notifications::notification()
-                            .summary("Time's up")
-                            .body("Ready to continue working?")
-                            .action("continue", "Continue")
-                            .timeout(Timeout::Never)
-                            .finalize()
-                            .show_async().await {
-                                Ok(handle) => {
-                                    let id = handle.id();
-                                    thread::spawn(clone_army!([barrier] move ||
-                                    notify_rust::handle_action(id, |action| {
-                                        if let ActionResponse::Custom("continue") = action {
-                                            barrier.unlock()
-                                        }
-                                    })));
-                                    Some(handle)
-                                }
-                                Err(_) => None,
-                        };
+                        #[cfg(target_family = "unix")] {
+                            state.set_paused(true);
+                            let handle = match notifications::notification()
+                                .summary("Time's up")
+                                .body("Ready to continue working?")
+                                .action("continue", "Continue")
+                                .timeout(Timeout::Never)
+                                .finalize()
+                                .show_async().await {
+                                    Ok(handle) => {
+                                        let id = handle.id();
+                                        thread::spawn(clone_army!([barrier] move ||
+                                        notify_rust::handle_action(id, |action| {
+                                            if let ActionResponse::Custom("continue") = action {
+                                                barrier.unlock()
+                                            }
+                                        })));
+                                        Some(handle)
+                                    }
+                                    Err(_) => None,
+                            };
 
-                        barrier.wait().await;
-                        if let Some(handle) = handle {
-                            handle.close()
+                            barrier.wait().await;
+                            if let Some(handle) = handle {
+                                handle.close()
+                            }
+                            state.set_paused(false);
+                            if state.get_status() == Status::Stopped {
+                                continue;
+                            }
                         }
-                        state.set_paused(false);
-                        if state.get_status() == Status::Stopped {
-                            continue;
+                        #[cfg(target_family = "windows")] {
+                            notifications::notification()
+                                .summary("Time's up")
+                                .body("Get back to work and crush it")
+                                .finalize()
+                                .show().ok();
                         }
+
                         state.set_status(Status::Work);
                         state.set_timer_start_time(utils::current_time());
                     }
