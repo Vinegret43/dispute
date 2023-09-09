@@ -10,6 +10,7 @@ export struct Settings {
     short_break_duration: duration,
     long_break_duration: duration,
     pomodoros_in_cycle: int,
+    sound_volume: int,
 }
 
 export global GlobalState {
@@ -35,6 +36,7 @@ export global GlobalState {
         short_break_duration: 5 * 60s,
         long_break_duration: 15 * 60s,
         pomodoros_in_cycle: 4,
+        sound_volume: 100,
     };
 }
 

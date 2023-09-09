@@ -3,10 +3,12 @@ import { Palette } from "palette.slint";
 import { GlobalState, GlobalCallbacks } from "../../globals.slint";
 
 export component SettingsView inherits Rectangle {
-    property<length> font-size: 48px;
+    // This thing shouldn't let clicks through
+    TouchArea {}
+    property<length> font-size: 42px;
     GridLayout {
-        padding: 16px;
-        spacing: 8px;
+        spacing: 12px;
+        padding: 18px;
         Row {
             Text {
                 text: "Work minutes";
@@ -16,6 +18,7 @@ export component SettingsView inherits Rectangle {
             SpinBox {
                 background: Palette.background_dark;
                 value: GlobalState.settings.pomodoro_duration / 60s;
+                font-size: font-size;
                 min: 1;
                 max: 99;
                 changed => {
@@ -33,6 +36,7 @@ export component SettingsView inherits Rectangle {
             SpinBox {
                 background: Palette.background_dark;
                 value: GlobalState.settings.short_break_duration / 60s;
+                font-size: font-size;
                 min: 1;
                 max: 99;
                 changed => {
@@ -50,6 +54,7 @@ export component SettingsView inherits Rectangle {
             SpinBox {
                 background: Palette.background_dark;
                 value: GlobalState.settings.long_break_duration / 60s;
+                font-size: font-size;
                 min: 1;
                 max: 99;
                 changed => {
@@ -60,17 +65,37 @@ export component SettingsView inherits Rectangle {
         }
         Row {
             Text {
-                text: "Pomodoros per cycle";
+                text: "Rounds";
                 font-size: font-size;
                 wrap: word-wrap;
             }
-            SpinBox {
+            spinbox := SpinBox {
                 max: 20;
                 min: 1;
+                font-size: font-size;
                 background: Palette.background_dark;
                 value: GlobalState.settings.pomodoros_in_cycle;
                 changed => {
                     GlobalState.settings.pomodoros_in_cycle = self.value;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+        Row {
+            Text {
+                text: "Sound volume (%)";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            SpinBox {
+                max: 200;
+                min: 0;
+                font-size: font-size;
+                background: Palette.background_dark;
+                value: GlobalState.settings.sound_volume;
+                width: spinbox.width;
+                changed => {
+                    GlobalState.settings.sound_volume = self.value;
                     GlobalCallbacks.settings_update();
                 }
             }

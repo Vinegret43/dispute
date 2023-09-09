@@ -2,6 +2,7 @@ import { Button } from "button.slint";
 
 export component SpinBox inherits HorizontalLayout {
     spacing: -1px;
+    width: (Math.floor(Math.log(max, 10)) + 1) * font-size + button.width + 16px;
     in property<length> font-size: 48px;
     in property<color> background;
 
@@ -14,7 +15,7 @@ export component SpinBox inherits HorizontalLayout {
     rect := Rectangle {
         background: background;
         height: font-size + 8px;
-        width: (Math.floor(Math.log(max, 10)) + 1) * font-size;
+        width: parent.width - button.width - 16px;
         input := TextInput {
             color: white;
             height: font-size;
@@ -60,7 +61,7 @@ export component SpinBox inherits HorizontalLayout {
         VerticalLayout {
             padding: 8px;
             alignment: space-around;
-            Button {
+            button := Button {
                 source: @image-url("images/arrow.png");
                 clicked => {
                     change_value(1);

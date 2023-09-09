@@ -25,6 +25,7 @@ fn main() {
     let app = AppWindow::new().unwrap();
     settings::apply_saved_settings(&app);
     debug::apply_debug_durations(&app);
+    #[cfg(target_family = "unix")]
     if env::args().any(|s| s == "--install") {
         utils::install_desktop_files().ok();
     }
@@ -55,7 +56,7 @@ fn main() {
         settings::save_settings(&app);
     }));
 
-    audio::apply_callbacks(callbacks);
+    audio::apply_callbacks(&app);
 
     match Instance::new() {
         Ok(instance) => {
@@ -92,9 +93,11 @@ fn main() {
                         notifications::notification()
                             .body("Go and get some rest!")
                             .finalize().show().ok();
-                        ui::spawn_local(async {
-                            audio::play_sound(audio::RING_SOUND).await;
-                        }).ok();
+                        ui::spawn_local(clone_army!([app] async move {
+                            let state = app.global::<GlobalState>();
+                            let volume = state.get_settings().sound_volume as f32 / 100.0;
+                            audio::play_sound(audio::RING_SOUND, volume).await;
+                        })).ok();
                         let pomodoros_completed = state.get_pomodoros_completed() + 1;
                         state.set_pomodoros_completed(pomodoros_completed);
                         if (pomodoros_completed % state.get_settings().pomodoros_in_cycle) == 0 {
@@ -105,9 +108,11 @@ fn main() {
                         state.set_timer_start_time(utils::current_time());
                     }
                     Status::Break | Status::LongBreak => {
-                        ui::spawn_local(async {
-                            audio::play_sound(audio::RING_SOUND).await;
-                        }).ok();
+                        ui::spawn_local(clone_army!([app] async move {
+                            let state = app.global::<GlobalState>();
+                            let volume = state.get_settings().sound_volume as f32 / 100.0;
+                            audio::play_sound(audio::RING_SOUND, volume).await;
+                        })).ok();
                         #[cfg(target_family = "unix")] {
                             state.set_paused(true);
                             let handle = match notifications::notification()
