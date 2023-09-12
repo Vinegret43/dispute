@@ -29,3 +29,7 @@ tray-item = { version = "0.8.0", features = ["ksni"] }
 
 [target.'cfg(target_family = "windows")'.build-dependencies]
 windres = "0.2.2"
+
+[package.metadata.appimage]
+auto_link = true
+assets = ["assets"]
