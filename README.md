@@ -26,18 +26,15 @@ again to re-open the window
 # Installation
 
 ### Linux (AppImage)
-Download latest AppImage from the [releases](https://github.com/Vinegret43/dispute/releases)
-page, open your terminal, cd to the directory where it's downloaded,  and make it
-executable using `chmod +x dispute-linux.AppImage`, then install using
-`./dispute-linux.AppImage --install`. After that, Dispute should be available
-in your app launcher. Note that, when moving the AppImage to another directory,
-you will have to run `./dispute-linux.AppImage --install` again
+ - Download latest AppImage from the [releases](https://github.com/Vinegret43/dispute/releases) page
+ - Open your terminal and CD into the directory where it's downloaded
+ - Run `chmod +x dispute-linux.AppImage` and `./dispute-linux.AppImage --install`
+ - Now Dispute is available in your app launcher. Enjoy!
 
 ### Windows
-Download latest exe file from the [releases](https://github.com/Vinegret43/dispute/releases)
-page. You should be able to run it simply by double-clicking. Note that on Windows
-Dispute also requires editundo.ttf font to be installed on your system. This font
-is included in the release, so just download and then double-click it to install
+ - Download latest exe file from the [releases](https://github.com/Vinegret43/dispute/releases) page
+ - Also download the editundo.ttf font from the same page and install it
+ - Now you should be able to open Dispute with a simple double-click!
 
 ### From source
 Note that, when built on UNIX, Dispute requires QT to be installed on your
