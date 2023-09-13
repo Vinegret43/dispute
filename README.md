@@ -24,11 +24,27 @@ again to re-open the window
 
 
 # Installation
-Note that Dispute will compile and work properly only on *NIX platforms
-supporting XDG specification. Dispute also currently requires QT to be
-installed on your system
 
-To install dispute, run these commands in the following order:
+### Linux (AppImage)
+Download latest AppImage from the [releases](https://github.com/Vinegret43/dispute/releases)
+page, open your terminal, cd to the directory where it's downloaded,  and make it
+executable using `chmod +x dispute-linux.AppImage`, then install using
+`./dispute-linux.AppImage --install`. After that, Dispute should be available
+in your app launcher. Note that, when moving the AppImage to another directory,
+you will have to run `./dispute-linux.AppImage --install` again
+
+### Windows
+Download latest exe file from the [releases](https://github.com/Vinegret43/dispute/releases)
+page. You should be able to run it simply by double-clicking. Note that on Windows
+Dispute also requires editundo.ttf font to be installed on your system. This font
+is included in the release, so just download and then double-click it to install
+
+### From source
+Note that, when built on UNIX, Dispute requires QT to be installed on your
+system
+
+To compile and install Dispute from source, run these commands in the
+following order:
 ```sh
 git clone "https://github.com/Vinegret43/dispute"
 cd dispute
@@ -37,6 +53,7 @@ cargo build --release
 # You don't have to copy it to ~/.local/bin, any directory which is in
 # your $PATH should be fine
 cp target/release/dispute ~/.local/bin
-# Installs desktop files so you can launch Dispute from your app launcher
+# Installs desktop files so you can launch Dispute from your app launcher.
+# UNIX-only
 dispute --install
 ```
