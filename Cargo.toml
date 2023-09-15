@@ -32,4 +32,3 @@ windres = "0.2.2"
 
 [package.metadata.appimage]
 auto_link = true
-assets = ["assets"]
