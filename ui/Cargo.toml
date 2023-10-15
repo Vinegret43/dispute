@@ -11,10 +11,10 @@ edition = "2021"
 opt-level = 3
 
 [target.'cfg(target_family = "windows")'.dependencies]
-slint = { version = "1.2.0", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-skia"] }
+slint = { version = "1.2.2", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-skia"] }
 
 [target.'cfg(target_family = "unix")'.dependencies]
-slint = { version = "1.2.0", default-features = false, features = ["std", "compat-1-2", "backend-qt"] }
+slint = { version = "1.2.2", default-features = false, features = ["std", "compat-1-2", "backend-qt"] }
 
 [build-dependencies]
-slint-build = "1.2.0"
+slint-build = "1.2.2"
