@@ -26,13 +26,13 @@ again to re-open the window
 # Installation
 
 ### Linux (AppImage)
- - Download latest AppImage from the [releases](https://github.com/Vinegret43/dispute/releases) page
+ - Download AppImage from the [latest release of Dipuste](https://github.com/Vinegret43/dispute/releases/latest)
  - Open your terminal and CD into the directory where it's downloaded
  - Run `chmod +x dispute-linux.AppImage` and `./dispute-linux.AppImage --install`
  - Now Dispute is available in your app launcher. Enjoy!
 
 ### Windows
- - Download latest exe file from the [releases](https://github.com/Vinegret43/dispute/releases) page
+ - Download exe file from the [latest release of Dispute](https://github.com/Vinegret43/dispute/releases/latest)
  - Also download the editundo.ttf font from the same page and install it
  - Now you should be able to open Dispute with a simple double-click!
 
