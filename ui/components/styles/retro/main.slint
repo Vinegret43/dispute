@@ -17,6 +17,10 @@ component Button inherits Button {
 }
 
 export component View inherits Rectangle {
+    init => {
+        fs.focus();
+    }
+
     property<bool> settings_opened: false;
     background: Palette.background;
 
@@ -119,6 +123,27 @@ export component View inherits Rectangle {
         upscaling_factor: 6;
         clicked => {
             settings_opened = !settings_opened;
+            if (!settings_opened) {
+                fs.focus();
+            }
+        }
+    }
+
+    fs := FocusScope {
+        key-pressed(key) => {
+            if (key.text == " " && !settings_opened) {
+                if (GlobalState.status == Status.Stopped) {
+                    GlobalCallbacks.start_timer();
+                } else {
+                    GlobalCallbacks.stop_timer();
+                }
+                return EventResult.accept;
+            }
+            if (key.text == "s") {
+                settings-opened = !settings-opened;
+                return EventResult.accept;
+            }
+            return EventResult.reject;
         }
     }
 }
