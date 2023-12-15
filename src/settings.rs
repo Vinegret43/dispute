@@ -13,6 +13,7 @@ pub struct Settings {
     long_break_duration: i64,
     pomodoros_in_cycle: i32,
     sound_volume: i32,
+    show_completed_pomodoros: bool,
 }
 
 pub fn apply_saved_settings(app: &AppWindow) {
@@ -72,6 +73,7 @@ impl From<ui::Settings> for Settings {
             long_break_duration: settings.long_break_duration,
             pomodoros_in_cycle: settings.pomodoros_in_cycle,
             sound_volume: settings.sound_volume,
+            show_completed_pomodoros: settings.show_completed_pomodoros,
         }
     }
 }
@@ -84,6 +86,7 @@ impl From<Settings> for ui::Settings {
             long_break_duration: val.long_break_duration,
             pomodoros_in_cycle: val.pomodoros_in_cycle,
             sound_volume: val.sound_volume,
+            show_completed_pomodoros: val.show_completed_pomodoros,
         }
     }
 }

@@ -49,6 +49,7 @@ fn main() {
     callbacks.on_stop_timer(clone_army!([app, barrier] move || {
         let state = app.global::<GlobalState>();
         state.set_status(Status::Stopped);
+        state.set_pomodoros_completed(0);
         barrier.unlock();
     }));
 

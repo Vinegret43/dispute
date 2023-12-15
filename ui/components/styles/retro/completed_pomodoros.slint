@@ -1,0 +1,30 @@
+
+export component CompletedPomodoros inherits Rectangle {
+    in property<int> completed;
+    Text {
+        text: label.text;
+        font-size: label.font-size;
+        color: #7b5480;
+        y: label.y + 4px;
+        x: label.x;
+    }
+    Text {
+        text: number.text;
+        font-size: number.font-size;
+        color: #7b5480;
+        y: number.y + 4px;
+        x: number.x;
+    }
+    HorizontalLayout {
+        alignment: center;
+        spacing: 16px;
+        number := Text {
+            text: "\{completed}";
+            font-size: 40px;
+        }
+        label := Text {
+            text: "completed";
+            font-size: 40px;
+        }
+    }
+}

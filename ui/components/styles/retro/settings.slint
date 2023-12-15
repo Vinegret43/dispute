@@ -1,11 +1,12 @@
 import { SpinBox } from "../../widgets/spinbox.slint";
+import { CheckBox } from "../../widgets/checkbox.slint";
 import { Palette } from "palette.slint";
 import { GlobalState, GlobalCallbacks } from "../../globals.slint";
 
 export component SettingsView inherits Rectangle {
     // This thing shouldn't let clicks through
     TouchArea {}
-    property<length> font-size: 42px;
+    property<length> font-size: 38px;
     GridLayout {
         spacing: 12px;
         padding: 18px;
@@ -96,6 +97,20 @@ export component SettingsView inherits Rectangle {
                 width: spinbox.width;
                 changed => {
                     GlobalState.settings.sound_volume = self.value;
+                    GlobalCallbacks.settings_update();
+                }
+            }
+        }
+        Row {
+            Text {
+                text: "Show number of completed pomodoros";
+                font-size: font-size;
+                wrap: word-wrap;
+            }
+            CheckBox {
+                value: GlobalState.settings.show_completed_pomodoros;
+                changed => {
+                    GlobalState.settings.show_completed_pomodoros = self.value;
                     GlobalCallbacks.settings_update();
                 }
             }

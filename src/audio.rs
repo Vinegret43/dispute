@@ -2,9 +2,9 @@ use crate::clone_army;
 
 use std::io::Cursor;
 
-use rodio::{Decoder, OutputStream, Source, source::ChannelVolume};
+use rodio::{source::ChannelVolume, Decoder, OutputStream, Source};
 
-use ui::{AppWindow, GlobalCallbacks, GlobalState, ComponentHandle};
+use ui::{AppWindow, ComponentHandle, GlobalCallbacks, GlobalState};
 
 pub const CLICK_DOWN_SOUND: &[u8] = include_bytes!("../assets/audio/click_down.mp3");
 pub const CLICK_UP_SOUND: &[u8] = include_bytes!("../assets/audio/click_up.mp3");
@@ -33,6 +33,8 @@ pub async fn play_sound(sound_raw: &'static [u8], volume: f32) {
     let reader = Cursor::new(sound_raw);
     let source = Decoder::new(reader).unwrap();
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    stream_handle.play_raw(ChannelVolume::new(source, vec![volume]).convert_samples()).unwrap();
+    stream_handle
+        .play_raw(ChannelVolume::new(source, vec![volume]).convert_samples())
+        .unwrap();
     async_std::task::sleep(std::time::Duration::from_secs(1)).await;
 }

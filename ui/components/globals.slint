@@ -11,6 +11,7 @@ export struct Settings {
     long_break_duration: duration,
     pomodoros_in_cycle: int,
     sound_volume: int,
+    show_completed_pomodoros: bool,
 }
 
 export global GlobalState {
@@ -37,6 +38,7 @@ export global GlobalState {
         long_break_duration: 15 * 60s,
         pomodoros_in_cycle: 4,
         sound_volume: 100,
+        show_completed_pomodoros: true,
     };
 }
 

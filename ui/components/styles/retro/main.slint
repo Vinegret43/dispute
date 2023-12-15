@@ -6,6 +6,7 @@ import { SevenSegment } from "seven_segment.slint";
 import { Segment } from "segment.slint";
 import { SettingsView } from "settings.slint";
 import { StatusDisplay } from "status.slint";
+import { CompletedPomodoros } from "completed_pomodoros.slint";
 
 component Button inherits Button {
     button_down => {
@@ -96,22 +97,42 @@ export component View inherits Rectangle {
     }
 
     StatusDisplay {
-        y: parent.height / 2 - timer.height / 2 - self.height - 24px;
+        y: timer.y - self.height - 24px;
         scaling_factor: 6;
+    }
+
+    if GlobalState.settings.show_completed_pomodoros : CompletedPomodoros {
+        y: timer.y + timer.height + 10px;
+        completed: GlobalState.pomodoros_completed;
     }
 
     // Settings drawer
     Rectangle {
         background: Palette.background;
         visible: self.x != -parent.width;
-        x: settings_opened ? 0 : -parent.width;
-        animate x {
-            duration: 0.15s;
-            easing: ease-out;
-        }
-        SettingsView {
+        settings_view := SettingsView {
             y: 90px;
         }
+        states [
+            open when settings_opened : {
+                x: 0;
+                in {
+                    animate x {
+                        duration: 0.15s;
+                        easing: ease-out;
+                    }
+                }
+            }
+            closed when ! settings_opened : {
+                x: -parent.width;
+                in {
+                    animate x {
+                        duration: 0.15s;
+                        easing: ease-out;
+                    }
+                }
+            }
+        ]
     }
 
     // Settings open/close button

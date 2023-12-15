@@ -1,0 +1,34 @@
+export component CheckBox inherits Rectangle {
+    background: transparent;
+    border-width: 6px;
+    border-color: white;
+    width: 48px;
+    height: self.width;
+
+    callback changed;
+    in-out property<bool> value;
+
+    Rectangle {
+        width: parent.width - parent.border-width*2 - 8px;
+        height: self.width;
+        background: white;
+        opacity: parent.value ? 100% : 0%;
+    }
+
+    Rectangle {
+        width: parent.width - parent.border-width*2 - 8px;
+        height: self.width;
+        background: white;
+        opacity: touch.has-hover ? 30% : 0%;
+        animate opacity {
+            duration: 0.1s;
+        }
+    }
+
+    touch := TouchArea {
+        clicked => {
+            parent.value = !parent.value;
+            parent.changed()
+        }
+    }
+}
