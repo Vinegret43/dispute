@@ -26,7 +26,7 @@ again to re-open the window
 # Installation
 
 ### Linux (AppImage)
- - Download AppImage from the [latest release of Dipuste](https://github.com/Vinegret43/dispute/releases/latest)
+ - Download AppImage from the [latest release of Dispute](https://github.com/Vinegret43/dispute/releases/latest)
  - Open your terminal and CD into the directory where it's downloaded
  - Run `chmod +x dispute-linux.AppImage` and `./dispute-linux.AppImage --install`
  - Now Dispute is available in your app launcher. Enjoy!
